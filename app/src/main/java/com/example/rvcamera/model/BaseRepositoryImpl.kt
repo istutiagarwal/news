@@ -10,4 +10,8 @@ class BaseRepositoryImpl() {
     suspend fun getTopHeading(country: String, category: String, apiKey: String)  =
         RetrofitHelper.api.getTopHeading(country = country, category = category, apiKey = apiKey)
 
+    suspend fun getSearchResults(q : String , from : String , to : String , sortBy : String , apiKey : String) =
+        RetrofitHelper.api.getSearchResults(q = q, from = from , to = to , sortBy = sortBy , apiKey = apiKey)
+
+
 }

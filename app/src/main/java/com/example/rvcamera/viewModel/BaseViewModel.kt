@@ -34,6 +34,19 @@ class BaseViewModel(private val  repository: BaseRepositoryImpl) : ViewModel() {
         }
     }
 
+    fun getSearchResults(q : String){
+        viewModelScope.launch(Dispatchers.IO){
+            val response = repository.getSearchResults(
+                q =q,
+                from = "",
+                to = "",
+                sortBy = "",
+                apiKey = "fb63fbba81b248d09cdb6a4e8768a0d6"
+            )
+            _topHeadingLiveData.postValue(handleTopHeading(response = response))
+        }
+    }
+
     private  fun handleTopHeading(response: Response<NewsTopHeadingModel>) : Resources<NewsTopHeadingModel>{
         if(response.isSuccessful){
             response.body()?.let {

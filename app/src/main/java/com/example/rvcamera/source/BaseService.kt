@@ -13,4 +13,13 @@ interface BaseService {
         @Query("category") category: String,
         @Query("apiKey") apiKey : String
     ):Response<NewsTopHeadingModel>
+
+    @GET("v2/everything")
+    suspend fun getSearchResults(
+        @Query("q") q: String,
+        @Query("from") from: String,
+        @Query("to") to: String,
+        @Query("sortBy")sortBy : String,
+        @Query("apiKey") apiKey : String
+    ) : Response<NewsTopHeadingModel>
 }
