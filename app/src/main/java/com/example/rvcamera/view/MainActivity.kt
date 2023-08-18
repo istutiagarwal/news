@@ -32,6 +32,8 @@ import com.example.rvcamera.source.RetrofitHelper
 import com.example.rvcamera.viewModel.BaseViewModel
 import com.example.rvcamera.viewModel.BaseViewModelFactory
 import java.util.Locale.filter
+import android.widget.AbsListView
+import androidx.recyclerview.widget.LinearLayoutManager
 
 class MainActivity : AppCompatActivity(), interfaceL {
 
@@ -57,11 +59,14 @@ class MainActivity : AppCompatActivity(), interfaceL {
 
         viewModel.topHeadingLiveData.observe(this) {
             adapter = it.data?.let { it1 ->
+                val totalPages = it1.totalResults / 500 + 2
+                isLastPage = viewModel.breakingNewsPage == totalPages
                 BaseAdapter(it1.article).apply {
                     newsListener(this@MainActivity)
                 }
             }
             recyclerView.adapter = adapter
+            recyclerView.addOnScrollListener(this@MainActivity.scrollListener)
         }
 
     }
@@ -80,10 +85,55 @@ class MainActivity : AppCompatActivity(), interfaceL {
                 return true
             }
             override fun onQueryTextSubmit(qString: String): Boolean {
-                viewModel.getSearchResults(qString)
+                viewModel.getSearchResults(q = qString, sortBy = null)
                 return true
             }
         })
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.popularity -> {
+                viewModel.getSearchResults(q = "apple", sortBy = "popularity")
+                Toast.makeText(this, "hello", Toast.LENGTH_SHORT).show()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    var isLoading = false
+    var isLastPage = false
+    var isScrolling = false
+
+    val scrollListener = object : RecyclerView.OnScrollListener(){
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+
+            val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+            val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+            val visibleItemCount = layoutManager.childCount
+            val totalItemCount = layoutManager.itemCount
+
+            val isNotLoadingAndNotLastPage = !isLoading && !isLastPage
+            val isAtLastItem = firstVisibleItemPosition + visibleItemCount >= totalItemCount
+            val isNotAtBeginning = firstVisibleItemPosition >= 0
+            val isTotalMoreThanVisible = totalItemCount >= 500L
+            val shouldPaginate = isNotLoadingAndNotLastPage && isAtLastItem && isNotAtBeginning &&
+                    isTotalMoreThanVisible && isScrolling
+            if(shouldPaginate) {
+                viewModel.getTopHeading()
+                isScrolling = false
+            } else {
+                binding.recyclerView.setPadding(0, 0, 0, 0)
+            }
+        }
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if(newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                isScrolling = true
+            }
+        }
     }
 }

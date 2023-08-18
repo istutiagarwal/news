@@ -11,7 +11,8 @@ interface BaseService {
     suspend fun getTopHeading(
         @Query("country") country: String,
         @Query("category") category: String,
-        @Query("apiKey") apiKey : String
+        @Query("apiKey") apiKey : String,
+        @Query("page") pageNumber: Int = 1,
     ):Response<NewsTopHeadingModel>
 
     @GET("v2/everything")
@@ -20,6 +21,8 @@ interface BaseService {
         @Query("from") from: String,
         @Query("to") to: String,
         @Query("sortBy")sortBy : String,
-        @Query("apiKey") apiKey : String
+        @Query("apiKey") apiKey : String,
+        @Query("page")
+        pageNumber: Int = 1,
     ) : Response<NewsTopHeadingModel>
 }

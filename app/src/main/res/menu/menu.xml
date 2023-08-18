@@ -14,6 +14,35 @@
         android:id="@+id/filter"
         android:orderInCategory="100"
         app:showAsAction="ifRoom"
-        android:title="@string/filter" />
+        android:title="@string/filter">
+
+        <menu>
+
+            <item
+                android:id="@+id/popularity"
+                android:orderInCategory="100"
+                app:showAsAction="always"
+                app:actionViewClass="android.widget.SearchView"
+                android:title="@string/popularity" />
+
+            <item
+                android:id="@+id/popularity1"
+                android:orderInCategory="100"
+                app:showAsAction="always"
+                app:actionViewClass="android.widget.SearchView"
+                android:title="@string/popularity" />
+
+
+            <item
+                android:id="@+id/popularity2"
+                android:orderInCategory="100"
+                app:showAsAction="always"
+                app:actionViewClass="android.widget.SearchView"
+                android:title="@string/popularity" />
+
+        </menu>
+
+
+        </item>
 
 </menu>

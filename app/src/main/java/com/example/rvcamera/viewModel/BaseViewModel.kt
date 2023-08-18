@@ -18,6 +18,8 @@ class BaseViewModel(private val  repository: BaseRepositoryImpl) : ViewModel() {
 
     val _topHeadingLiveData : MutableLiveData<Resources<NewsTopHeadingModel>> = MutableLiveData()
     val topHeadingLiveData : LiveData<Resources<NewsTopHeadingModel>> = _topHeadingLiveData
+    var breakingNewsResponse : NewsTopHeadingModel? = null
+    var breakingNewsPage = 1
 
     init {
         getTopHeading()
@@ -28,20 +30,22 @@ class BaseViewModel(private val  repository: BaseRepositoryImpl) : ViewModel() {
           val response =   repository.getTopHeading(
                 country = "us",
                 category = "business",
-                apiKey = "fb63fbba81b248d09cdb6a4e8768a0d6"
+                apiKey = "fb63fbba81b248d09cdb6a4e8768a0d6",
+              pageNumber = 2
             )
             _topHeadingLiveData.postValue(handleTopHeading(response = response))
         }
     }
 
-    fun getSearchResults(q : String){
+    fun getSearchResults(q : String? , sortBy : String?){
         viewModelScope.launch(Dispatchers.IO){
             val response = repository.getSearchResults(
-                q =q,
+                q =q ?: " ",
                 from = "",
                 to = "",
-                sortBy = "",
-                apiKey = "fb63fbba81b248d09cdb6a4e8768a0d6"
+                sortBy = sortBy ?: "",
+                apiKey = "fb63fbba81b248d09cdb6a4e8768a0d6",
+                pageNumber = 2
             )
             _topHeadingLiveData.postValue(handleTopHeading(response = response))
         }
@@ -49,8 +53,16 @@ class BaseViewModel(private val  repository: BaseRepositoryImpl) : ViewModel() {
 
     private  fun handleTopHeading(response: Response<NewsTopHeadingModel>) : Resources<NewsTopHeadingModel>{
         if(response.isSuccessful){
-            response.body()?.let {
-               return Resources.Success(it)
+            response.body()?.let { resultResponse ->
+                breakingNewsPage++
+                if(breakingNewsResponse == null){
+                    breakingNewsResponse = resultResponse
+                }else{
+                    val oldArticles = breakingNewsResponse?.article
+                    val newArticles = resultResponse.article
+                    oldArticles?.addAll(newArticles)
+                }
+               return Resources.Success(breakingNewsResponse ?: resultResponse)
             }
         }
         return Resources.Error(null, response.message())

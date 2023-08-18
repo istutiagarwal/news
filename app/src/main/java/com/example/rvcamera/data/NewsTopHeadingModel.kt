@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class NewsTopHeadingModel(
     @SerializedName("articles")
-    val article : List<ArticlesModel>,
+    val article : MutableList<ArticlesModel>,
     @SerializedName("status")
     val status: String,
     @SerializedName("totalResults")

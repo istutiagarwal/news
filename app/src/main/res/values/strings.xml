@@ -2,4 +2,5 @@
     <string name="app_name">RvCamera</string>
     <string name="search">search</string>
     <string name="filter">filter</string>
+    <string name="popularity">popularity</string>
 </resources>
